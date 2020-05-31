@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">שעון מעורר מרוחק</string>
+    <string name="question">את מי תרצה להעיר ?</string>
+    <string name="wake">הער</string>
+    <string name="cancel">ביטול</string>
+    <string name="my_name">מהו שמך ?</string>
+
+</resources>
