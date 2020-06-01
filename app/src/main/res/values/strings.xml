@@ -3,6 +3,7 @@
     <string name="question">Who do you want to wake up?</string>
     <string name="my_name">what is your name ?</string>
     <string name="wake">Wake</string>
+    <string name="submit">Submit</string>
     <string name="cancel">cancel</string>
 
 </resources>

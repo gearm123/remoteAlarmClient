@@ -1,6 +1,8 @@
 package com.mgroup.remotealarm;
 
+import android.app.NotificationManager;
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -76,8 +78,14 @@ public class CheckWakeUpThread extends Thread {
 
     public void startAlarm(){
 
-
         Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        if(alarmUri == null){
+            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+        }
+
+        if(alarmUri == null){
+            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+        }
         Ringtone ringtone = RingtoneManager.getRingtone(mContext, alarmUri);
         ringtone.play();
     }
