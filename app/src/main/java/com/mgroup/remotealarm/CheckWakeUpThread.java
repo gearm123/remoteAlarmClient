@@ -1,13 +1,27 @@
 package com.mgroup.remotealarm;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PixelFormat;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.util.Log;
-
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -19,12 +33,15 @@ import javax.net.ssl.HttpsURLConnection;
 
 import info.guardianproject.netcipher.NetCipher;
 
+import static android.content.Context.LAYOUT_INFLATER_SERVICE;
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 public class CheckWakeUpThread extends Thread {
 
     Context mContext;
     private String responseStatus;
     private String mName;
-
+    public static MediaPlayer mMediaPlayer;
     public CheckWakeUpThread(Context context,String name) {
         this.mContext = context;
         this.mName = name;
@@ -33,7 +50,7 @@ public class CheckWakeUpThread extends Thread {
 
     public void run() {
         try {
-            Log.v("MGCarAppStore", "not sending http request");
+            Log.v("remote_alarm", "not sending http request");
             String url = "https://warm-meadow-45276.herokuapp.com/checkwake";
             HttpsURLConnection client = NetCipher.getHttpsURLConnection(url);
             client.setRequestMethod("POST");
@@ -66,6 +83,8 @@ public class CheckWakeUpThread extends Thread {
             Log.v("remote_alarm", "server response is "+responseStatus);
             if(responseStatus.equals("yes")) {
                 startAlarm();
+                Intent newIntent= new Intent(mContext, PopUpService.class);
+                mContext.startService(newIntent);
             }
 
         } catch (Exception e) {
@@ -77,16 +96,33 @@ public class CheckWakeUpThread extends Thread {
     }
 
     public void startAlarm(){
-
-        Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        if(alarmUri == null){
-            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        }
-
-        if(alarmUri == null){
-            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
-        }
-        Ringtone ringtone = RingtoneManager.getRingtone(mContext, alarmUri);
-        ringtone.play();
+        startAlarmMediaPlayer();
     }
+
+
+
+    public void startAlarmMediaPlayer() {
+        try {
+            Uri notification = null;
+            notification = RingtoneManager
+                    .getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+            mMediaPlayer = new MediaPlayer();
+            mMediaPlayer.setDataSource(mContext, notification);
+
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+
+            mMediaPlayer.prepare();
+            mMediaPlayer.setLooping(true);
+            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                public void onPrepared(MediaPlayer arg0) {
+                    mMediaPlayer.seekTo(0);
+                    mMediaPlayer.start();
+
+                }
+
+            });
+        }catch(Exception e){}
+    }
+
 }

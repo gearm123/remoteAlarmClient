@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -13,24 +16,33 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private AlertDialog emailDialog;
     private AlertDialog nameDialog;
-    public  String myName;
+    public String myName;
     private SharedPreferences mPrefs;
     private ImageView wakeButton;
+    private Switch isCheckedSwitch;
     SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         wakeButton = this.findViewById(R.id.wake_button);
         wakeButton.setOnClickListener(this);
+        isCheckedSwitch = this.findViewById(R.id.toggle);
         mPrefs = getSharedPreferences("remote_alarm", MODE_PRIVATE);
         editor = mPrefs.edit();
         checkAndGetName();
+        if (Utilities.isGreaterThanOreo()) {
+            checkDrawPer();
+        }
+
+        updateChecked();
     }
 
     private AlertDialog createEmailDialog() {
@@ -72,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void onClick(View view) {
                         String nameToWake = edittextEmail.getText().toString();
                         emailDialog.dismiss();
-                        WakeUpThread wake = new WakeUpThread(getApplicationContext(),nameToWake);
+                        WakeUpThread wake = new WakeUpThread(getApplicationContext(), nameToWake);
                         wake.start();
                     }
                 });
@@ -134,17 +146,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    public void checkAndGetName(){
+    public void checkAndGetName() {
 
         myName = mPrefs.getString("name", "");
-        if(myName.equals("")){
+        if (myName.equals("")) {
             nameDialog = createDialogName();
             nameDialog.show();
         }
     }
+
     @Override
     public void onClick(View view) {
         emailDialog = createEmailDialog();
         emailDialog.show();
+    }
+
+    public void checkDrawPer() {
+        if (!Settings.canDrawOverlays(this)) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, 0);
+        }
+    }
+
+    public void updateChecked(){
+        editor.putBoolean("is_checked", isCheckedSwitch.isChecked());
+        editor.commit();
     }
 }
