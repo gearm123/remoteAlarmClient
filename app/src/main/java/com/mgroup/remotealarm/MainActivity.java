@@ -25,15 +25,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public String myName;
     private SharedPreferences mPrefs;
     private ImageView wakeButton;
+    private Button filterContactsButton;
     private Switch isCheckedSwitch;
+    public static ContactsImporter myContacts;
     SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        myContacts = new ContactsImporter();
+        Log.v("remote_alarm", "about to sync contacts");
+        Utilities.syncContacts(this,myContacts);
+        Log.v("remote_alarm", "contacts synced");
+        myContacts.printToastContactIndex(this,6);
         wakeButton = this.findViewById(R.id.wake_button);
         wakeButton.setOnClickListener(this);
+        filterContactsButton = this.findViewById(R.id.filter_by_contact);
+        filterContactsButton.setOnClickListener(this);
         isCheckedSwitch = this.findViewById(R.id.toggle);
         mPrefs = getSharedPreferences("remote_alarm", MODE_PRIVATE);
         editor = mPrefs.edit();
@@ -157,8 +166,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        emailDialog = createEmailDialog();
-        emailDialog.show();
+
+        if(view.getId() == R.id.wake_button) {
+            Intent i = new Intent();
+            i.setClassName("com.mgroup.remotealarm", "com.mgroup.remotealarm.ContactChooseActivity");
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            this.startActivity(i);;
+        }else if(view.getId() == R.id.filter_by_contact){
+            Intent i = new Intent();
+            i.setClassName("com.mgroup.remotealarm", "com.mgroup.remotealarm.ContactChooseActivity");
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            this.startActivity(i);
+        }
     }
 
     public void checkDrawPer() {

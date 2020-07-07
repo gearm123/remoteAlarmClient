@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
-        android:layout_marginBottom="150dp"
+        android:layout_marginBottom="300dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,7 +25,17 @@
         android:layout_height="wrap_content"
         android:text="would you like to enable alarm ?"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/wake_button"
+        app:layout_constraintTop_toBottomOf="@+id/filter_by_contact"
         android:checked="true"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/filter_by_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/wake_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="filter approved contacts" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -28,7 +28,7 @@ public class WakeUpThread extends Thread {
 
     public void run() {
         try {
-            Log.v("remote_alarm", "sending http request");
+            Log.v("remote_alarm", "sending http request for number "+mName);
             String url = "https://warm-meadow-45276.herokuapp.com/wake";
             HttpsURLConnection client = NetCipher.getHttpsURLConnection(url);
             client.setRequestMethod("POST");
