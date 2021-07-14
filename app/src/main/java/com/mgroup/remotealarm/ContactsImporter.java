@@ -28,6 +28,11 @@ public class ContactsImporter {
         return null;
     }
 
+    public ArrayList getContactList(){
+        return contacts;
+
+    }
+
 
     public void printToastContactIndex(Context context, int index){
         Toast.makeText(context,"name is "+contacts.get(index).getName()+" and number is "+contacts.get(index).getNumber(), Toast.LENGTH_LONG).show();

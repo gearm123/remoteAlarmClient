@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             this.startActivity(i);;
         }else if(view.getId() == R.id.filter_by_contact){
             Intent i = new Intent();
-            i.setClassName("com.mgroup.remotealarm", "com.mgroup.remotealarm.ContactChooseActivity");
+            i.setClassName("com.mgroup.remotealarm", "com.mgroup.remotealarm.ContactsFilterActivity");
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             this.startActivity(i);
         }

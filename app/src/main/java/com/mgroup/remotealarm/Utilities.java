@@ -2,11 +2,18 @@ package com.mgroup.remotealarm;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Build;
 import android.provider.ContactsContract;
+import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Utilities {
 
@@ -80,5 +87,63 @@ public class Utilities {
             cur.close();
         }
         return nameList;
+    }
+
+    public static void addContacttoFilterList(Context context,String name){
+        SharedPreferences prefs = context.getSharedPreferences(
+                "filter_list", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+        String json = prefs.getString("filter_array", "");
+        Type type = new TypeToken<List<String>>() {}.getType();
+        List<String> arrayList = gson.fromJson(json, type);
+        if(arrayList!=null) {
+            Log.v("remote_alarm","array list isnt null adding name and size is "+arrayList.size());
+            arrayList.add(name);
+        }else{
+            Log.v("remote_alarm","array list is null adding first name");
+            arrayList = new ArrayList<String>();
+            arrayList.add(name);
+        }
+        String jsonUpdated = gson.toJson(arrayList);
+        editor.putString("filter_array", jsonUpdated);
+        editor.commit();
+    }
+
+    public static boolean isFilteredContact(Context context,String name){
+        SharedPreferences prefs = context.getSharedPreferences(
+                "filter_list", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = prefs.getString("filter_array", "");
+        Type type = new TypeToken<List<String>>() {}.getType();
+        List<String> arrayList = gson.fromJson(json, type);
+        if(arrayList!=null){
+            Log.v("remote_alarm","array list is not null from contains size is "+arrayList.size());
+        }
+        if((arrayList!= null)&&(arrayList.contains(name))){
+            Log.v("remote_alarm","does contain returning true");
+            return true;
+        }
+        return false;
+    }
+
+    public static void removeFilteredContact(Context context,String name){
+        SharedPreferences prefs = context.getSharedPreferences(
+                "filter_list", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        Gson gson = new Gson();
+        String json = prefs.getString("filter_array", "");
+        Type type = new TypeToken<List<String>>() {}.getType();
+        List<String> arrayList = gson.fromJson(json, type);
+        if((arrayList!=null)&&(arrayList.size()>0)) {
+            Log.v("remote_alarm","array list is fine and big removing name");
+            arrayList.remove(name);
+            String jsonUpdated = gson.toJson(arrayList);
+            editor.putString("filter_array", jsonUpdated);
+            editor.commit();
+        }else{
+            Log.v("remote_alarm","array list is either null or empty");
+        }
+
     }
 }

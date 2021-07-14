@@ -38,4 +38,5 @@
         app:layout_constraintTop_toBottomOf="@+id/wake_button"
         app:layout_constraintEnd_toEndOf="parent"
         android:text="filter approved contacts" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
