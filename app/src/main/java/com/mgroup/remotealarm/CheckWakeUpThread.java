@@ -41,10 +41,12 @@ public class CheckWakeUpThread extends Thread {
     Context mContext;
     private String responseStatus;
     private String mName;
+    private String mNumber;
     public static MediaPlayer mMediaPlayer;
-    public CheckWakeUpThread(Context context,String name) {
+    public CheckWakeUpThread(Context context,String name,String number) {
         this.mContext = context;
         this.mName = name;
+        this.mNumber = number;
     }
 
 
@@ -82,6 +84,7 @@ public class CheckWakeUpThread extends Thread {
             in.close();
             Log.v("remote_alarm", "server response is "+responseStatus);
             if(responseStatus.equals("yes")) {
+                Log.v("remote_alarm", "server returned we should wake up");
                 startAlarm();
                 Intent newIntent= new Intent(mContext, PopUpService.class);
                 mContext.startService(newIntent);

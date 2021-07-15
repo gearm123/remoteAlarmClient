@@ -29,22 +29,12 @@
         />
 
     <Button
-        android:id="@+id/enable"
+        android:id="@+id/wake_friend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/contact_number"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="enable" />
-
-    <Button
-        android:id="@+id/disable"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@+id/contact_number"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="gone"
-        android:text="disable" />
+        android:text="wake" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

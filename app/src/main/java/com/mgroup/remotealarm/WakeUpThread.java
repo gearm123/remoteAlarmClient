@@ -19,22 +19,24 @@ public class WakeUpThread extends Thread {
 
     Context mContext;
     private String mName;
+    private String mNumber;
 
-    public  WakeUpThread(Context context, String name) {
+    public  WakeUpThread(Context context, String name,String number) {
         this.mContext = context;
         this.mName = name;
+        this.mNumber = number;
     }
 
 
     public void run() {
         try {
-            Log.v("remote_alarm", "sending http request for number "+mName);
+            Log.v("remote_alarm", "sending http request for number "+mNumber);
             String url = "https://warm-meadow-45276.herokuapp.com/wake";
             HttpsURLConnection client = NetCipher.getHttpsURLConnection(url);
             client.setRequestMethod("POST");
             client.setDoOutput(true);
             Uri.Builder builder = new Uri.Builder()
-                    .appendQueryParameter("name", mName);
+                    .appendQueryParameter("name", mNumber);
             String query = builder.build().getEncodedQuery();
             OutputStream os = client.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));

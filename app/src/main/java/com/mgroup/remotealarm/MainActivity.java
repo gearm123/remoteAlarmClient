@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(view.getId() == R.id.wake_button) {
             Intent i = new Intent();
-            i.setClassName("com.mgroup.remotealarm", "com.mgroup.remotealarm.ContactChooseActivity");
+            i.setClassName("com.mgroup.remotealarm", "com.mgroup.remotealarm.ChooseContactActivity");
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             this.startActivity(i);;
         }else if(view.getId() == R.id.filter_by_contact){
