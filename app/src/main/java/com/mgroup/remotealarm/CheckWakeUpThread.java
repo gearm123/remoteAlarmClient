@@ -1,27 +1,12 @@
 package com.mgroup.remotealarm;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PixelFormat;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 
 import org.json.JSONObject;
 
@@ -36,18 +21,13 @@ import javax.net.ssl.HttpsURLConnection;
 
 import info.guardianproject.netcipher.NetCipher;
 
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
-import static android.content.Context.NOTIFICATION_SERVICE;
-
 public class CheckWakeUpThread extends Thread {
 
     Context mContext;
     private String responseStatus;
-    private String mName;
     public static MediaPlayer mMediaPlayer;
-    public CheckWakeUpThread(Context context,String name) {
+    public CheckWakeUpThread(Context context) {
         this.mContext = context;
-        this.mName = name;
     }
 
 
@@ -88,14 +68,14 @@ public class CheckWakeUpThread extends Thread {
             wakingObject resObject = parseJson(responseStatus);
             if(resObject.getStatus().equals("yes")) {
                 Log.v("remote_alarm", "server returned we should wake up");
-                if(Utilities.isParsedFilteredContact(mContext,resObject.getWaker())) {
+               // if(Utilities.isParsedFilteredContact(mContext,resObject.getWaker())) {
                     Log.v("remote_alarm","user is enbaled - waking up!");
                     startAlarm();
                     Intent newIntent = new Intent(mContext, PopUpService.class);
                     mContext.startService(newIntent);
-                }else{
+            //    }else{
                     Log.v("remote_alarm","user is disabled - cannot wake me up");
-                }
+            //    }
             }
 
         } catch (Exception e) {

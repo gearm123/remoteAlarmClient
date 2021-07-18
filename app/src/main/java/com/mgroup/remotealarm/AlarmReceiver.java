@@ -17,7 +17,6 @@ import static android.content.Context.MODE_PRIVATE;
 public class AlarmReceiver extends BroadcastReceiver implements View.OnClickListener {
 
     private SharedPreferences mPrefs;
-    String myName;
     boolean wanted;
 
     @Override
@@ -25,10 +24,9 @@ public class AlarmReceiver extends BroadcastReceiver implements View.OnClickList
         Log.v("remote_alarm", "scheduled alarm is on");
         setAlarmAgain(context);
         mPrefs = context.getSharedPreferences("remote_alarm", MODE_PRIVATE);
-        myName = mPrefs.getString("name", "");
         wanted = mPrefs.getBoolean("is_checked", true);
         if (wanted) {
-            CheckWakeUpThread checker = new CheckWakeUpThread(context, myName);
+            CheckWakeUpThread checker = new CheckWakeUpThread(context);
             checker.start();
         }
     }
@@ -40,7 +38,7 @@ public class AlarmReceiver extends BroadcastReceiver implements View.OnClickList
         Intent intentAlarm = new Intent(context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
                 1, intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, 30000, pendingIntent);
+        alarmManager.setAlarmClock(new AlarmManager.AlarmClockInfo(System.currentTimeMillis()+10*1000,pendingIntent), pendingIntent);
     }
 
     @Override
