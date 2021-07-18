@@ -73,5 +73,6 @@ public class PopUpService extends Service implements View.OnClickListener {
 
         CheckWakeUpThread.mMediaPlayer.stop();
         wm1.removeView(popupView);
+        stopSelf();
     }
 }

@@ -22,6 +22,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -41,24 +44,23 @@ public class CheckWakeUpThread extends Thread {
     Context mContext;
     private String responseStatus;
     private String mName;
-    private String mNumber;
     public static MediaPlayer mMediaPlayer;
-    public CheckWakeUpThread(Context context,String name,String number) {
+    public CheckWakeUpThread(Context context,String name) {
         this.mContext = context;
         this.mName = name;
-        this.mNumber = number;
     }
 
 
     public void run() {
         try {
-            Log.v("remote_alarm", "not sending http request");
-            String url = "https://warm-meadow-45276.herokuapp.com/checkwake";
+            Log.v("remote_alarm", " sending http request");
+            Log.v("remote_alarm", "my parsed number is "+Utilities.parseNumber(Utilities.getMyNumber(mContext)));
+            String url = "https://damp-castle-07464.herokuapp.com/checkwake";
             HttpsURLConnection client = NetCipher.getHttpsURLConnection(url);
             client.setRequestMethod("POST");
             client.setDoOutput(true);
             Uri.Builder builder = new Uri.Builder()
-                    .appendQueryParameter("name", mName);
+                    .appendQueryParameter("number", Utilities.parseNumber(Utilities.getMyNumber(mContext)));
             String query = builder.build().getEncodedQuery();
             OutputStream os = client.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
@@ -83,11 +85,17 @@ public class CheckWakeUpThread extends Thread {
             responseStatus = response.toString();
             in.close();
             Log.v("remote_alarm", "server response is "+responseStatus);
-            if(responseStatus.equals("yes")) {
+            wakingObject resObject = parseJson(responseStatus);
+            if(resObject.getStatus().equals("yes")) {
                 Log.v("remote_alarm", "server returned we should wake up");
-                startAlarm();
-                Intent newIntent= new Intent(mContext, PopUpService.class);
-                mContext.startService(newIntent);
+                if(Utilities.isParsedFilteredContact(mContext,resObject.getWaker())) {
+                    Log.v("remote_alarm","user is enbaled - waking up!");
+                    startAlarm();
+                    Intent newIntent = new Intent(mContext, PopUpService.class);
+                    mContext.startService(newIntent);
+                }else{
+                    Log.v("remote_alarm","user is disabled - cannot wake me up");
+                }
             }
 
         } catch (Exception e) {
@@ -102,6 +110,21 @@ public class CheckWakeUpThread extends Thread {
         startAlarmMediaPlayer();
     }
 
+    public wakingObject parseJson(String response){
+        JSONObject serverResponse = null;
+        wakingObject tmpObject = null;
+        try {
+            serverResponse = new JSONObject(response);
+            String status = serverResponse.getString("status");
+            String waker = serverResponse.getString("waker");
+            Log.v("remote_alarm", "status is "+status+" and waker is "+waker);
+            tmpObject = new wakingObject(status,waker);
+        }catch (Exception e){
+
+        }
+        return tmpObject;
+    }
+
 
 
     public void startAlarmMediaPlayer() {
@@ -109,7 +132,7 @@ public class CheckWakeUpThread extends Thread {
             Uri notification = null;
             notification = RingtoneManager
                     .getDefaultUri(RingtoneManager.TYPE_ALARM);
-
+            Log.v("remote_alarm", "trying to start alarm");
             mMediaPlayer = new MediaPlayer();
             mMediaPlayer.setDataSource(mContext, notification);
 
@@ -125,7 +148,9 @@ public class CheckWakeUpThread extends Thread {
                 }
 
             });
-        }catch(Exception e){}
+        }catch(Exception e){
+            Log.v("remote_alarm", "exception playing alarm"+e);
+        }
     }
 
 }

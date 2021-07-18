@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Build;
 import android.provider.ContactsContract;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -89,7 +90,7 @@ public class Utilities {
         return nameList;
     }
 
-    public static void addContacttoFilterList(Context context,String name){
+    public static void addContacttoFilterList(Context context,String number){
         SharedPreferences prefs = context.getSharedPreferences(
                 "filter_list", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -99,18 +100,18 @@ public class Utilities {
         List<String> arrayList = gson.fromJson(json, type);
         if(arrayList!=null) {
             Log.v("remote_alarm","array list isnt null adding name and size is "+arrayList.size());
-            arrayList.add(name);
+            arrayList.add(number);
         }else{
             Log.v("remote_alarm","array list is null adding first name");
             arrayList = new ArrayList<String>();
-            arrayList.add(name);
+            arrayList.add(number);
         }
         String jsonUpdated = gson.toJson(arrayList);
         editor.putString("filter_array", jsonUpdated);
         editor.commit();
     }
 
-    public static boolean isFilteredContact(Context context,String name){
+    public static boolean isFilteredContact(Context context,String number){
         SharedPreferences prefs = context.getSharedPreferences(
                 "filter_list", Context.MODE_PRIVATE);
         Gson gson = new Gson();
@@ -120,14 +121,33 @@ public class Utilities {
         if(arrayList!=null){
             Log.v("remote_alarm","array list is not null from contains size is "+arrayList.size());
         }
-        if((arrayList!= null)&&(arrayList.contains(name))){
+        if((arrayList!= null)&&(arrayList.contains(number))){
             Log.v("remote_alarm","does contain returning true");
             return true;
         }
         return false;
     }
 
-    public static void removeFilteredContact(Context context,String name){
+    public static boolean isParsedFilteredContact(Context context,String number){
+        SharedPreferences prefs = context.getSharedPreferences(
+                "filter_list", Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = prefs.getString("filter_array", "");
+        Type type = new TypeToken<List<String>>() {}.getType();
+        List<String> arrayList = gson.fromJson(json, type);
+        if(arrayList!=null){
+            Log.v("remote_alarm","array list is not null from contains size is "+arrayList.size());
+        }
+
+        for(int i = 0;i < arrayList.size();i++){
+            if(number.equals(Utilities.parseNumber(arrayList.get(i)))){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void removeFilteredContact(Context context,String number){
         SharedPreferences prefs = context.getSharedPreferences(
                 "filter_list", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -137,7 +157,7 @@ public class Utilities {
         List<String> arrayList = gson.fromJson(json, type);
         if((arrayList!=null)&&(arrayList.size()>0)) {
             Log.v("remote_alarm","array list is fine and big removing name");
-            arrayList.remove(name);
+            arrayList.remove(number);
             String jsonUpdated = gson.toJson(arrayList);
             editor.putString("filter_array", jsonUpdated);
             editor.commit();
@@ -145,5 +165,19 @@ public class Utilities {
             Log.v("remote_alarm","array list is either null or empty");
         }
 
+    }
+
+    public static String getMyNumber(Context context){
+        TelephonyManager tMgr = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+        String mPhoneNumber = tMgr.getLine1Number();
+        Log.v("remote_alarm","my number is "+mPhoneNumber);
+        return mPhoneNumber;
+    }
+
+    public static String parseNumber(String number){
+        number = number.replace("+", "");
+        number = number.replace("-", "");
+        number = number.replace(" ", "");
+        return number;
     }
 }

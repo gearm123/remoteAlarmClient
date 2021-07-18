@@ -105,7 +105,7 @@ public class ContactsAdapter extends
         final  Button enableB = holder.mEnableButton;
         final  Button disableB = holder.mdisableButton;
         name.setText(contact.getName());
-        if(Utilities.isFilteredContact(mContext,contact.getName())){
+        if(Utilities.isFilteredContact(mContext,contact.getNumber())){
             name.setTextColor(Color.GREEN);
             enableB.setVisibility(View.GONE);
             disableB.setVisibility(View.VISIBLE);
@@ -118,7 +118,7 @@ public class ContactsAdapter extends
                 enableB.setVisibility(View.GONE);
                 disableB.setVisibility(View.VISIBLE);
                 name.setTextColor(Color.GREEN);
-                Utilities.addContacttoFilterList(mContext,contact.getName());
+                Utilities.addContacttoFilterList(mContext,contact.getNumber());
             }
         });
 
@@ -128,7 +128,7 @@ public class ContactsAdapter extends
                 enableB.setVisibility(View.VISIBLE);
                 disableB.setVisibility(View.GONE);
                 name.setTextColor(Color.WHITE);
-                Utilities.removeFilteredContact(mContext,contact.getName());
+                Utilities.removeFilteredContact(mContext,contact.getNumber());
             }
         });
     }

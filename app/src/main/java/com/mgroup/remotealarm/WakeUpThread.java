@@ -30,13 +30,15 @@ public class WakeUpThread extends Thread {
 
     public void run() {
         try {
-            Log.v("remote_alarm", "sending http request for number "+mNumber);
-            String url = "https://warm-meadow-45276.herokuapp.com/wake";
+            String numberToSend = Utilities.parseNumber(Utilities.getMyNumber(mContext));
+            Log.v("remote_alarm", "sending http request for number "+Utilities.parseNumber(mNumber) +"from number "+numberToSend);
+            String url = "https://damp-castle-07464.herokuapp.com/wake";
             HttpsURLConnection client = NetCipher.getHttpsURLConnection(url);
             client.setRequestMethod("POST");
             client.setDoOutput(true);
             Uri.Builder builder = new Uri.Builder()
-                    .appendQueryParameter("name", mNumber);
+                    .appendQueryParameter("number_toWake", Utilities.parseNumber(mNumber))
+                    .appendQueryParameter("number_waker", numberToSend);
             String query = builder.build().getEncodedQuery();
             OutputStream os = client.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));

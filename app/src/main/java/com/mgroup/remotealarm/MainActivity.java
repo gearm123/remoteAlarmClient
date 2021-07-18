@@ -20,7 +20,6 @@ import android.widget.Switch;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private AlertDialog emailDialog;
     private AlertDialog nameDialog;
     public String myName;
     private SharedPreferences mPrefs;
@@ -53,57 +52,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         updateChecked();
     }
-
-    private AlertDialog createEmailDialog() {
-        AlertDialog.Builder builder;
-        AlertDialog alertDialog;
-        final EditText edittextEmail;
-        Log.v("remote_alarm", "creating dialog");
-        builder = new AlertDialog.Builder(this);
-
-        edittextEmail = new EditText(this);
-        edittextEmail.setHint(getString(R.string.question));
-        edittextEmail.setInputType(EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-
-        LinearLayout lay = new LinearLayout(this);
-        lay.setOrientation(LinearLayout.VERTICAL);
-        lay.addView(edittextEmail);
-        builder.setTitle(getString(R.string.question));
-        builder.setView(lay);
-        builder.setCancelable(false);
-
-        builder.setPositiveButton(getString(R.string.wake), null);
-
-        builder.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                emailDialog.dismiss();
-                finish();
-            }
-        });
-
-        alertDialog = builder.create();
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-
-            @Override
-            public void onShow(DialogInterface dialog) {
-                Button b = emailDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                b.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        String nameToWake = edittextEmail.getText().toString();
-                        emailDialog.dismiss();
-                        WakeUpThread wake = new WakeUpThread(getApplicationContext(), nameToWake);
-                        wake.start();
-                    }
-                });
-            }
-        });
-
-
-        return alertDialog;
-    }
-
 
     private AlertDialog createDialogName() {
         AlertDialog.Builder builder;
